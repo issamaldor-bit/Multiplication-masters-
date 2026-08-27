@@ -1,6 +1,5 @@
 const express=require('express');const Database=require('better-sqlite3');const path=require('path');const crypto=require('crypto');
-const app=express();app.use(express.json());app.use(express.static(path.join(__dirname,'public')));
-require('fs').mkdirSync(path.join(__dirname,'data'),{recursive:true});
+const app=express();app.use(express.json());
 const db=new Database(path.join(__dirname,'data','competition.db'));db.pragma('journal_mode=WAL');
 db.exec(`CREATE TABLE IF NOT EXISTS competitions(id TEXT PRIMARY KEY,name TEXT,questions INTEGER DEFAULT 20,minTable INTEGER DEFAULT 2,maxTable INTEGER DEFAULT 12,timeLimit INTEGER DEFAULT 300,open INTEGER DEFAULT 1,createdAt TEXT);CREATE TABLE IF NOT EXISTS students(id TEXT PRIMARY KEY,name TEXT,grade TEXT,className TEXT,teacher TEXT,createdAt TEXT);CREATE TABLE IF NOT EXISTS attempts(id TEXT PRIMARY KEY,competitionId TEXT,studentId TEXT,startTime TEXT,endTime TEXT,totalTime REAL,correct INTEGER,incorrect INTEGER,accuracy REAL,score REAL,completed INTEGER DEFAULT 0);CREATE TABLE IF NOT EXISTS answers(id INTEGER PRIMARY KEY AUTOINCREMENT,attemptId TEXT,qIndex INTEGER,a INTEGER,correctAnswer INTEGER,isCorrect INTEGER,timeSpent REAL);`);
 const now=()=>new Date().toISOString();if(!db.prepare('SELECT 1 FROM competitions LIMIT 1').get())db.prepare('INSERT INTO competitions (id,name,questions,minTable,maxTable,timeLimit,open,createdAt) VALUES (?,?,?,?,?,?,?,?)').run('default','Multiplication Masters Challenge',20,2,12,300,1,now());
